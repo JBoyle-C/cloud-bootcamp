@@ -15,3 +15,4 @@ resource "aws_subnet" "public_b" {
   cidr_block              = "10.0.11.0/24"
   availability_zone       = "us-east-1b"
 }
+learning terraform
