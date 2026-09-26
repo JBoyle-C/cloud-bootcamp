@@ -157,3 +157,29 @@ resource "aws_security_group" "database" {
     Environment = "dev"
   }
 }
+
+resource "aws_security_group" "app" {
+  name        = "app-sg"
+  description = "Allow traffic from web tier only"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description     = "App traffic from web security group only"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "app-sg"
+    Environment = "dev"
+  }
+}
