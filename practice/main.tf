@@ -41,3 +41,40 @@ resource "aws_subnet" "data" {
     Environment = "dev"
   }
 }
+
+resource "aws_subnet" "public_b" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.4.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "public_b"
+    Environment = "dev"
+  }
+}
+
+resource "aws_subnet" "private_b" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.5.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name        = "private_b"
+    Environment = "dev"
+  }
+}
+
+resource "aws_subnet" "data_b" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.6.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name        = "data_b"
+    Environment = "dev"
+  }
+}
+
