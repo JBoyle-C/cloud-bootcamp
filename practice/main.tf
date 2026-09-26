@@ -134,3 +134,26 @@ resource "aws_security_group" "web" {
     Environment = "dev"
   }
 }
+resource "aws_security_group" "database" {
+  name        = "database-sg"
+  description = "Allow MySQL/Auora traffic only from web tier"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description     = "MySQL from web security group only"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web.id]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name        = "database-sg"
+    Environment = "dev"
+  }
+}
