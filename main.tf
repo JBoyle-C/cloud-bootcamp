@@ -123,17 +123,28 @@ resource "aws_security_group" "web" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = {
     Name        = "web-sg"
     Environment = "dev"
   }
 }
+
 resource "aws_security_group" "database" {
   name        = "database-sg"
   description = "Allow MySQL/Auora traffic only from web tier"
@@ -146,14 +157,35 @@ resource "aws_security_group" "database" {
     protocol        = "tcp"
     security_groups = [aws_security_group.web.id]
   }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = {
     Name        = "database-sg"
+    Environment = "dev"
+  }
+}
+
+resource "aws_security_group" "ssh" {
+  name        = "ssh-sg"
+  description = "Allow SSH from EC2 Instance Connect"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "SSH from EC2 instance connect"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["18.206.107.24/29"]
+  }
+
+  tags = {
+    Name        = "ssh-sg"
     Environment = "dev"
   }
 }
@@ -231,10 +263,9 @@ resource "aws_instance" "web" {
   ami                    = "ami-0c02fb55956c7d316"
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public.id
-  vpc_security_group_ids = [aws_security_group.web.id]
+  vpc_security_group_ids = [aws_security_group.web.id, aws_security_group.ssh.id]
 
   tags = {
     Name = "practice-web-server"
-
   }
 }
